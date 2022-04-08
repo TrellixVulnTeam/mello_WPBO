@@ -1,9 +1,11 @@
+# importing required modules
 import bs4
 import requests
 import random
 
 
 def get_quote():
+    """returns a random quote picture"""
     r = requests.get("https://www.wow4u.com/quote-of-the-day/")
     soup = bs4.BeautifulSoup(r.content, "html.parser")
     quotes = [i["src"] for i in soup.find_all("img", {"data-orig-height": "446"})]

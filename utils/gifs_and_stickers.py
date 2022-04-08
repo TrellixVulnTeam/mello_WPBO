@@ -1,9 +1,12 @@
+# importing required modules
 import requests
 import json
 import random
 from decouple import config
 
+
 def get_sticker(query):
+    """returns a sticker based on the query passed"""
     response = requests.get(
         "http://api.giphy.com/v1/stickers/search",
         {"q": query, "api_key": config("GIPHY_API"), "limit": "1000"},
@@ -17,6 +20,7 @@ def get_sticker(query):
 
 
 def get_gif(query):
+    """returns a gif based on the query passed"""
     response = requests.get(
         "http://api.giphy.com/v1/gifs/search",
         {"q": query, "api_key": config("GIPHY_API"), "limit": "1000"},
