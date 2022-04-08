@@ -30,15 +30,16 @@ async def on_message(msg):
         if len(msg.content) == 6:
             message = get_random_movie()
             await msg.channel.send(message)
-        else:
-            try:
-                query = msg.content.split("$genre ")[1]
-                message = get_movie_by_genre(str(query))
-                await msg.channel.send(message)
-            except discord.errors.HTTPException:
-                query = msg.content.split("$genre ")[1]
-                message = get_movie_by_genre(str(query))
-                await msg.channel.send(message)
+        
+    if msg.content.startswith:
+        try:
+            query = msg.content.split("$genre ")[1]
+            message = get_movie_by_genre(str(query))
+            await msg.channel.send(message)
+        except discord.errors.HTTPException:
+            query = msg.content.split("$genre ")[1]
+            message = get_movie_by_genre(str(query))
+            await msg.channel.send(message)
 
     if msg.content.startswith("$show"):
         message = get_random_show()
