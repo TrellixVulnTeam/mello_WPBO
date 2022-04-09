@@ -36,16 +36,15 @@ async def on_message(msg):
             message = get_random_movie()
             await msg.channel.send(message)
 
-    if msg.content.startswith:
+    if msg.content.startswith("$genre"):
         # movie recommendation by genre
         try:
             query = msg.content.split("$genre ")[1]
             message = get_movie_by_genre(str(query))
             await msg.channel.send(message)
         except discord.errors.HTTPException:
-            query = msg.content.split("$genre ")[1]
-            message = get_movie_by_genre(str(query))
-            await msg.channel.send(message)
+            
+            await msg.channel.send("No such genre.Try again please.")
 
     if msg.content.startswith("$tvshow"):
         # random but nice tv show recommendation
