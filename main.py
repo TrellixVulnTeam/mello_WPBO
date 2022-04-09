@@ -2,6 +2,7 @@
 from utils import get_random_movie, get_random_show, get_random_anime
 from utils import get_meme, get_joke, get_animals, get_sticker, get_gif, get_quote
 from utils import first_msg, cmds, get_movie_by_genre
+from utils import get_fact
 from discord.utils import find
 from decouple import config
 import discord
@@ -65,6 +66,11 @@ async def on_message(msg):
         query = msg.content.split("$gif ")[1]
         gif_url = get_gif(query)
         await msg.channel.send(gif_url)
+
+    if msg.content.startswith("$fact"):
+        #gets a random fact
+        fact = get_fact()
+        await msg.channel.send(fact)
 
     if msg.content.startswith("$sticker"):
         # get a sticker based on the query passed

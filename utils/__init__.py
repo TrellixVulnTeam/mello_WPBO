@@ -9,3 +9,4 @@ from .recommend import get_random_movie
 from .recommend import get_random_show
 from .recommend import get_random_anime
 from .recommend import get_movie_by_genre
+from .facts import get_fact
