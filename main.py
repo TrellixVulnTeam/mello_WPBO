@@ -2,20 +2,38 @@
 from utils import get_random_movie, get_random_show, get_random_anime
 from utils import get_meme, get_joke, get_animals, get_sticker, get_gif, get_quote
 from utils import first_msg, cmds, get_movie_by_genre
-from utils import trivia,get_trivia
+from utils import trivia, get_trivia
+from utils import tictactoewin
 import asyncio
 from utils import get_fact
-from discord_components import Button
+from discord.ext import commands
 from discord.utils import find
 from decouple import config
 import discord
 import random
+from discord.ext import commands
 
 # initializing the client
-intents=discord.Intents.default()
+intents = discord.Intents.all()
+client = commands.Bot(command_prefix="$", intents=intents)
+
+# tictactoe vars
+player1 = ""
+player2 = ""
+turn = ""
+game_over = True
+board = []
 
 
-client = discord.Client(intents = intents)
+def check_win(cond, mark):
+    global game_over
+    for condition in cond:
+        if (
+            board[condition[0]] == mark
+            and board[condition[1]] == mark
+            and board[condition[2]] == mark
+        ):
+            game_over = True
 
 
 @client.event
@@ -119,50 +137,157 @@ async def on_message(msg):
 
     if msg.content.startswith("$cmds"):
         # gets the list of available commands
-        embed=discord.Embed(title=cmds["heading"],color=discord.Colour.random())
+        embed = discord.Embed(title=cmds["heading"], color=discord.Colour.random())
         for i in cmds.keys():
-            if i!="heading":
-                embed.add_field(name=i,value=cmds[i],inline=True)
+            if i != "heading":
+                embed.add_field(name=i, value=cmds[i], inline=True)
         await msg.channel.send(embed=embed)
 
     if msg.content.startswith("$trivia"):
-        #starts a trivia game
+        # starts a trivia game
         if msg.content == "$trivia" or msg.content == "$trivia ":
-            embed=discord.Embed(title=trivia["info"],color=discord.Colour.random())
-            embed.add_field(name="Categories:",value=trivia["categories"])
-            embed.add_field(name="Difficulties:",value=trivia["difficulties"])
+            embed = discord.Embed(title=trivia["info"], color=discord.Colour.random())
+            embed.add_field(name="Categories:", value=trivia["categories"])
+            embed.add_field(name="Difficulties:", value=trivia["difficulties"])
 
             await msg.channel.send(embed=embed)
         else:
-            category=msg.content.split(" ")[1]
-            difficulty=msg.content.split(" ")[2]
-            the_trivia=get_trivia(category,difficulty)
+            category = msg.content.split(" ")[1]
+            difficulty = msg.content.split(" ")[2]
+            the_trivia = get_trivia(category, difficulty)
             for i in the_trivia:
-                question=i["question"].replace("&#039;","'").replace("&quot;",'"')
-                answers=list(i["incorrect_answers"] + [i["correct_answer"]])
+                question = i["question"].replace("&#039;", "'").replace("&quot;", '"')
+                answers = list(i["incorrect_answers"] + [i["correct_answer"]])
                 random.shuffle(answers)
-                
-                embed=discord.Embed(title=question,description=",\n".join(answers).replace("&#039;","'").replace("&quot;",'"'),color=discord.Colour.random())
+
+                embed = discord.Embed(
+                    title=question,
+                    description="\n (or) \n".join(answers)
+                    .replace("&#039;", "'")
+                    .replace("&quot;", '"'),
+                    color=discord.Colour.random(),
+                )
                 await msg.channel.send(embed=embed)
                 await asyncio.sleep(1)
-                message = await client.wait_for("message")  
-                if message.content.lower()==i["correct_answer"].lower():
+                message = await client.wait_for("message")
+                if message.content.lower() == i["correct_answer"].lower():
                     await msg.channel.send("Correct!")
                 elif message.content.startswith("$endtrivia"):
-                    #ends the trivia game
-                    
+                    # ends the trivia game
                     break
                 else:
-                    await msg.channel.send(f"Incorrect! The correct answer is {i['correct_answer']}")         
+                    await msg.channel.send(
+                        f"Incorrect! The correct answer is {i['correct_answer'].replace('&#039;','`')}"
+                    )
                 await asyncio.sleep(1)
             if not question:
                 await msg.channel.send("No Such category or difficulty.")
-            await asyncio.sleep(1)                 
+            await asyncio.sleep(1)
             await msg.channel.send("***Trivia Ended!***")
-         
+    if msg.content.startswith("$tictactoe"):
+        # starts a tictactoe game
+        global count
+        global player1
+        global player2
+        global turn
+        global game_over
+
+        if game_over:
+            global board
+            board = [
+                ":white_large_square:",
+                ":white_large_square:",
+                ":white_large_square:",
+                ":white_large_square:",
+                ":white_large_square:",
+                ":white_large_square:",
+                ":white_large_square:",
+                ":white_large_square:",
+                ":white_large_square:",
+            ]
+            turn = ""
+            game_over = False
+            count = 0
             
-                    
-                    
+            player1 = msg.content.split(" ")[1]
+            player2 = msg.content.split(" ")[2]
+            
+            if "@"+str(msg.author).split("#")[0] in [player1,player2]:
+                pass
+            else:
+                game_over=False
+            line = ""
+            for x in range(len(board)):
+                if x == 2 or x == 5 or x == 8:
+                    line += " " + board[x]
+                    await msg.channel.send(line)
+                    line = ""
+                else:
+                    line += " " + board[x]
+
+            num = random.randint(1, 2)
+            if num == 1:
+                turn = player1
+                await msg.channel.send(f"It is {player1}'s turn.")
+            elif num == 2:
+                turn = player2
+                await msg.channel.send(f"It is {player2}'s turn.")
+        else:
+            await msg.channel.send("A game is already in progress!")
+
+    if msg.content.startswith("$place"):
+        # place your move in the board
+        try:
+            if not game_over:
+                pos = int(msg.content.split(" ")[1])
+            else:
+                await msg.channel.send("Pls start a new game.")
+        except ValueError:
+            await msg.channel.send("Please enter a valid position")
+        if not game_over:
+            mark = ""
+            if turn == player1:
+                mark = ":regional_indicator_x:"
+            elif turn == player2:
+                mark = ":o2:"
+            if 0 < pos < 10 and board[pos - 1] == ":white_large_square:":
+                board[pos - 1] = mark
+                count += 1
+
+                line = ""
+                for x in range(len(board)):
+                    if x == 2 or x == 5 or x == 8:
+                        line += " " + board[x]
+                        await msg.channel.send(line)
+                        line = ""
+                    else:
+                        line += " " + board[x]
+                check_win(tictactoewin, mark)
+                if game_over == True:
+                    await msg.channel.send(mark + " wins!")
+                elif count >= 9:
+                    game_over = True
+                    await msg.channel.send("It's a tie!")
+                if turn == player1:
+                    turn = player2
+                elif turn == player2:
+                    turn = player1
+                await msg.channel.send(f"it's {turn}'s turn")
+
+            else:
+                await msg.channel.send(
+                    "Be sure to choose an integer between 1 and 9 (inclusive) and an unmarked tile."
+                )
+
+        else:
+            await msg.channel.send(
+                "Please start a new game using the $tictactoe command."
+            )
+    if msg.content.startswith("$endtictactoe"):
+        game_over=True
+        await msg.channel.send("Game ended!")
+         
+
 
 # running the bot
 client.run(config("DISCORD_BOT_KEY"))

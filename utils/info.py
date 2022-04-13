@@ -1,4 +1,18 @@
 # message variables
+
+
+
+tictactoewin=[
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6]
+]
+
 trivia = {
     "info": """Welcome to trivia!
     $trivia <category> <difficulty> - starts a trivia game based of 10 questions based on the category and difficulty""",
