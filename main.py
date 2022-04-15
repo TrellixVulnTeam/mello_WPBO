@@ -99,7 +99,7 @@ async def on_message(msg):
             gif_url = get_gif(query)
             await msg.channel.send(gif_url)
         except IndexError:
-            await msg.channel.send("Pls specify a query.")
+            await msg.channel.send("Pls specify a query to search for.")
 
 
     if msg.content.startswith("$fact"):
@@ -114,7 +114,7 @@ async def on_message(msg):
             sticker_url = get_sticker(query)
             await msg.channel.send(sticker_url)
         except IndexError:
-            await msg.channel.send("Pls specify a query.")
+            await msg.channel.send("Pls specify a query to search for.")
 
     if msg.content.startswith("$meme"):
         # summons a random meme
