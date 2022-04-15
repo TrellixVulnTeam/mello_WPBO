@@ -1,7 +1,9 @@
 # importing everything
 from utils import get_random_movie, get_random_show, get_random_anime
-from utils import get_meme, get_joke, get_animals, get_sticker, get_gif, get_quote
+from utils import get_meme, get_joke,cat,dog, get_sticker, get_gif, get_quote
 from utils import first_msg, cmds, get_movie_by_genre
+from utils import get_text
+import json
 from utils import trivia, get_trivia
 from utils import tictactoewin
 import asyncio
@@ -11,6 +13,7 @@ from discord.utils import find
 from decouple import config
 import discord
 import random
+from utils import get_dark_joke
 from discord.ext import commands
 
 # initializing the client
@@ -70,7 +73,11 @@ async def on_message(msg):
         except discord.errors.HTTPException:
 
             await msg.channel.send("No such genre.Try again please.")
-
+            
+    if msg.content.startswith("$asciitext"):
+        #[ONLY WORKS ON PC] Converts the text into nice figlet format
+        content=msg.content.split("$asciitext ")[1]
+        await msg.channel.send(f"```{get_text(content)}```")
     if msg.content.startswith("$tvshow"):
         # random but nice tv show recommendation
         message = get_random_show()
@@ -87,9 +94,13 @@ async def on_message(msg):
 
     if msg.content.startswith("$gif"):
         # get a gif based on the query passed
-        query = msg.content.split("$gif ")[1]
-        gif_url = get_gif(query)
-        await msg.channel.send(gif_url)
+        try:
+            query = msg.content.split("$gif ")[1]
+            gif_url = get_gif(query)
+            await msg.channel.send(gif_url)
+        except IndexError:
+            await msg.channel.send("Pls specify a query.")
+
 
     if msg.content.startswith("$fact"):
         # gets a random fact
@@ -98,9 +109,12 @@ async def on_message(msg):
 
     if msg.content.startswith("$sticker"):
         # get a sticker based on the query passed
-        query = msg.content.split("$sticker ")[1]
-        sticker_url = get_sticker(query)
-        await msg.channel.send(sticker_url)
+        try:
+            query = msg.content.split("$sticker ")[1]
+            sticker_url = get_sticker(query)
+            await msg.channel.send(sticker_url)
+        except IndexError:
+            await msg.channel.send("Pls specify a query.")
 
     if msg.content.startswith("$meme"):
         # summons a random meme
@@ -125,10 +139,19 @@ async def on_message(msg):
             joke = get_joke()
             await msg.channel.send(joke)
 
-    if msg.content.startswith("$animals"):
-        # gets a picture of a random animal (There is a 10 sec latency)
-        animal = get_animals()
-        await msg.channel.send(animal)
+    if msg.content.startswith("$cat"):
+        # gets a picture of a random cat 
+        try:
+            catpic = cat()
+            await msg.channel.send(catpic)
+        except json.decoder.JSONDecodeError:
+            await msg.channel.send("This service is currently unavailable.")
+            
+
+    if msg.content.startswith("$dog"):
+        # gets a picture of a random dog 
+        dogpic = dog()
+        await msg.channel.send(dogpic)
 
     if msg.content.startswith("$quote"):
         # gets a nice quote picture
@@ -143,6 +166,16 @@ async def on_message(msg):
                 embed.add_field(name=i, value=cmds[i], inline=True)
         await msg.channel.send(embed=embed)
 
+    if msg.content.startswith("$darkjoke"):
+        #returns a dark humorous joke
+        for i in range(1,5):
+            try:
+                await msg.channel.send(get_dark_joke())
+                break
+            except discord.errors.HTTPException:
+                continue
+
+        
     if msg.content.startswith("$trivia"):
         # starts a trivia game
         if msg.content == "$trivia" or msg.content == "$trivia ":
@@ -184,6 +217,7 @@ async def on_message(msg):
                 await msg.channel.send("No Such category or difficulty.")
             await asyncio.sleep(1)
             await msg.channel.send("***Trivia Ended!***")
+
     if msg.content.startswith("$tictactoe"):
         # starts a tictactoe game
         global count
@@ -208,10 +242,10 @@ async def on_message(msg):
             turn = ""
             game_over = False
             count = 0
-            
+
             player1 = msg.content.split(" ")[1]
             player2 = msg.content.split(" ")[2]
-            
+
             if "@"+str(msg.author).split("#")[0] in [player1,player2]:
                 pass
             else:

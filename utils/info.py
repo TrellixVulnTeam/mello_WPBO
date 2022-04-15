@@ -17,7 +17,7 @@ trivia = {
     "info": """Welcome to trivia!
     $trivia <category> <difficulty> - starts a trivia game based of 10 questions based on the category and difficulty""",
     "categories": """    
-⠀⠀ 1.science
+        1.science
         2.general knowledge
         3.computers
         4.mathematics
@@ -33,7 +33,7 @@ trivia = {
         14.animals
         """,
     "difficulties": """    
-⠀⠀ 1.easy
+        1.easy
         2.medium
         3.hard 
 """,
@@ -50,13 +50,19 @@ cmds = {
     "$fact": "gives you a random fact",
     "$choose <value-1> <value-2> ": "chooses between the two values",
     "$toss ": "tosses a coin.",
+    "$endtictactoe":"ends a tictactoe game",
+    "$place <pos>":"makes your move in the tictactoe game.",
+    "$asciitext <text>":"makes a nice text ascii art.[only works in PCs]",
     "$gif <query>": "gives a gif related to the query.",
     "$sticker <query>": "gives a sticker related to the query.",
     "$meme": "summons a random meme.",
-    "$animals": " gives a random picture of an animal (but there is a 10 sec latency).",
+    "$cat": " gives a random cat picture.",
+    "$dog":"gives a random dog picture",
+    "$tictactoe <@player1> <@player2>":"Starts a tictactoe game between the two people.",
     "$quote": "gives a random quote picture.",
     "$movie": "gives a random but great movie recommendation.",
     "$show": "gives a random but great TV show recommendation.",
     "$joke": " makes a hilarous dad joke.",
     "$genre <genre>": "gives a nice movie or a TV show recomendation in the genre you have passed.",
+    "$darkjoke":"makes a dark humorous joke."
 }
